@@ -18,14 +18,18 @@
     "next": "^15.5.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "zod": "^4.1.0"
+    "zod": "^4.1.0",
+    "prisma": "^6.15.0",
+    "typescript": "^5.9.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "prisma": "^6.15.0",
-    "tsx": "^4.20.0",
-    "typescript": "^5.9.0"
+    "tsx": "^4.20.0"
+  },
+  "engines": {
+    "node": "22.22.x",
+    "npm": ">=10"
   }
 }
