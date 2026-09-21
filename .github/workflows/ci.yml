@@ -1,0 +1,23 @@
+name: MedLab LIS CI
+
+on:
+  push:
+    branches: ["main", "feat/full-medlab-lis"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/medlab
+      AUTH_SECRET: ci-only-secret-change-me
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run build
