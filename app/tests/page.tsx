@@ -1,0 +1,1 @@
+import{db}from"@/lib/db";export default async function Tests(){const ts=await db.test.findMany();return <><h1>Test Catalogue</h1><table className="table"><thead><tr><th>Code</th><th>Test</th><th>Specimen</th><th>Department</th></tr></thead><tbody>{ts.map(t=><tr key={t.id}><td>{t.code}</td><td>{t.name}</td><td>{t.specimen}</td><td>{t.department}</td></tr>)}</tbody></table></>}
