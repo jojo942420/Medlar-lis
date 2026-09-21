@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role { ADMIN LAB_MANAGER SCIENTIST RECEPTIONIST PATHOLOGIST AUDITOR }
+enum OrderStatus { ORDERED COLLECTED RECEIVED IN_PROGRESS VERIFIED RELEASED CANCELLED }
+enum ResultStatus { PENDING PRELIMINARY VERIFIED AMENDED }
+enum QCStatus { PASS FAIL WARNING }
+enum AnalyzerStatus { ONLINE OFFLINE MAINTENANCE }
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(SCIENTIST)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  orders       LabOrder[] @relation("OrderCreatedBy")
+  verified    Result[] @relation("VerifiedBy")
+  auditLogs   AuditLog[]
+}
+
+model Patient {
+  id          String   @id @default(cuid())
+  patientNo   String   @unique
+  firstName   String
+  lastName    String
+  middleName  String?
+  sex         String?
+  dateOfBirth DateTime?
+  phone       String?
+  address     String?
+  nationalId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders      LabOrder[]
+}
+
+model Test {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  name          String
+  specimen      String
+  department    String
+  unit          String?
+  referenceLow  Float?
+  referenceHigh Float?
+  active        Boolean  @default(true)
+  results       Result[]
+}
+
+model LabOrder {
+  id          String      @id @default(cuid())
+  accessionNo String      @unique
+  patientId   String
+  patient     Patient     @relation(fields: [patientId], references: [id])
+  createdById String
+  createdBy   User        @relation("OrderCreatedBy", fields: [createdById], references: [id])
+  status      OrderStatus @default(ORDERED)
+  priority    String      @default("ROUTINE")
+  clinicalInfo String?
+  orderedAt   DateTime    @default(now())
+  collectedAt DateTime?
+  receivedAt  DateTime?
+  results     Result[]
+}
+
+model Result {
+  id          String       @id @default(cuid())
+  orderId     String
+  testId      String
+  order       LabOrder     @relation(fields: [orderId], references: [id])
+  test        Test         @relation(fields: [testId], references: [id])
+  value       String?
+  numericValue Float?
+  status      ResultStatus @default(PENDING)
+  flag        String?
+  verifiedById String?
+  verifiedBy   User?       @relation("VerifiedBy", fields: [verifiedById], references: [id])
+  verifiedAt  DateTime?
+  createdAt   DateTime     @default(now())
+}
+
+model Analyzer {
+  id          String          @id @default(cuid())
+  name        String
+  manufacturer String?
+  model       String?
+  protocol    String          @default("ASTM")
+  host        String?
+  port        Int?
+  status      AnalyzerStatus  @default(OFFLINE)
+  lastSeen    DateTime?
+  createdAt   DateTime        @default(now())
+}
+
+model QCRecord {
+  id          String    @id @default(cuid())
+  analyzerId  String?
+  analyzer    Analyzer? @relation(fields: [analyzerId], references: [id])
+  testCode    String
+  level       String
+  lotNumber   String
+  value       Float
+  mean        Float
+  sd          Float
+  status      QCStatus
+  runAt       DateTime  @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
