@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MedLab LIS — Laboratory Information System</title>
+<meta name="description" content="Modern medical laboratory information system dashboard">
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--ink:#172033;--muted:#748096;--line:#e8ecf3;--brand:#155eef;--brand2:#0b4bc4;--green:#12b76a;--orange:#f79009;--red:#f04438;--purple:#7a5af8;--nav:#0b1730}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+.app{display:flex;min-height:100vh}.sidebar{width:250px;background:var(--nav);color:#c8d2e6;padding:22px 16px;position:fixed;inset:0 auto 0 0}.brand{display:flex;align-items:center;gap:11px;padding:4px 10px 28px;color:#fff;font-weight:800;font-size:20px}.logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#3b82f6,#14b8a6);display:grid;place-items:center;color:#fff;font-weight:900}.section{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#667896;padding:15px 11px 8px}.nav{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;margin:3px 0;font-size:13px;cursor:pointer}.nav:hover,.nav.active{background:#17294a;color:#fff}.nav.active{box-shadow:inset 3px 0 0 #4f8cff}.bottom{position:absolute;bottom:18px;left:16px;right:16px}.user{display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid #1c2b48}.avatar{width:34px;height:34px;border-radius:50%;background:#dbeafe;color:#155eef;display:grid;place-items:center;font-size:12px;font-weight:800}.main{margin-left:250px;width:calc(100% - 250px)}header{height:74px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:5}.search{width:360px;background:#f6f8fb;border:1px solid var(--line);border-radius:10px;padding:10px 13px;color:var(--muted);font-size:13px}.actions{display:flex;align-items:center;gap:16px}.bell{font-size:18px}.content{padding:28px 30px}.welcome{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px}.eyebrow{font-size:12px;color:var(--brand);font-weight:700}.welcome h1{margin:5px 0 5px;font-size:25px}.welcome p{margin:0;color:var(--muted);font-size:13px}.date{background:#fff;border:1px solid var(--line);padding:10px 13px;border-radius:9px;font-size:12px;color:#526078}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.stat{display:flex;justify-content:space-between}.stat .icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:#eff6ff;color:var(--brand)}.label{font-size:12px;color:var(--muted)}.num{font-size:25px;font-weight:800;margin-top:7px}.delta{font-size:11px;margin-top:6px}.up{color:var(--green)}.neutral{color:var(--muted)}.layout{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-top:16px}.card h3{font-size:14px;margin:0}.sub{font-size:11px;color:var(--muted);margin-top:4px}.table{margin-top:18px;width:100%;border-collapse:collapse;font-size:12px}.table th{text-align:left;color:#8a96a9;font-weight:600;border-bottom:1px solid var(--line);padding:9px 8px}.table td{padding:12px 8px;border-bottom:1px solid #f0f2f6}.patient{font-weight:700}.badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:700}.pending{background:#fff4e5;color:#b54708}.complete{background:#ecfdf3;color:#027a48}.critical{background:#fef3f2;color:#b42318}.chart{height:190px;display:flex;align-items:flex-end;gap:11px;padding:24px 6px 8px}.bar{flex:1;border-radius:6px 6px 2px 2px;background:#dbeafe;min-height:25px}.bar:nth-child(2n){background:#bfdbfe}.bar strong{display:block;height:100%;background:#155eef;border-radius:6px 6px 2px 2px}.legend{display:flex;justify-content:space-between;color:#98a2b3;font-size:10px;padding:0 5px}.queue{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line)}.qleft{display:flex;gap:10px;align-items:center}.qdot{width:9px;height:9px;border-radius:50%;background:var(--orange)}.qdot.g{background:var(--green)}.qdot.r{background:var(--red)}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}.quick button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:12px;text-align:left;font-weight:700;font-size:12px;color:#344054;cursor:pointer}.quick button:hover{border-color:#b7cdfa;background:#f8fbff}.footer-note{font-size:10px;color:#98a2b3;margin-top:20px;text-align:center}@media(max-width:950px){.sidebar{width:76px}.brand span,.nav span,.section,.bottom .user div{display:none}.main{margin-left:76px;width:calc(100% - 76px)}.grid{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}header{padding:0 18px}.search{width:220px}}@media(max-width:620px){.sidebar{display:none}.main{margin:0;width:100%}.grid{grid-template-columns:1fr}.content{padding:18px}.welcome{align-items:flex-start;gap:10px}.date{display:none}header{height:64px}.search{width:190px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="brand"><div class="logo">M</div><span>MedLab LIS</span></div>
+<div class="section">Workspace</div>
+<div class="nav active" onclick="show('Dashboard')">▦ <span>Dashboard</span></div>
+<div class="nav" onclick="show('Patients')">♙ <span>Patients</span></div>
+<div class="nav" onclick="show('Orders')">◫ <span>Lab Orders</span></div>
+<div class="nav" onclick="show('Results')">✓ <span>Results</span></div>
+<div class="section">Laboratory</div>
+<div class="nav" onclick="show('Tests')">⌁ <span>Test Catalogue</span></div>
+<div class="nav" onclick="show('QC')">◉ <span>Quality Control</span></div>
+<div class="nav" onclick="show('Analyzers')">▣ <span>Analyzers</span></div>
+<div class="nav" onclick="show('Reports')">▤ <span>Reports</span></div>
+<div class="section">Administration</div>
+<div class="nav" onclick="show('Users')">♧ <span>Users & Roles</span></div>
+<div class="nav" onclick="show('Settings')">⚙ <span>Settings</span></div>
+<div class="bottom"><div class="user"><div class="avatar">JS</div><div><b style="font-size:12px;color:#fff">Lab Scientist</b><div style="font-size:10px">Administrator</div></div></div></div>
+</aside>
+<main class="main">
+<header><div class="search">⌕ &nbsp; Search patients, orders, results…</div><div class="actions"><span class="bell">♧</span><span style="font-size:12px;color:#667085">Accra Central Laboratory</span><div class="avatar">JS</div></div></header>
+<section class="content">
+<div class="welcome"><div><div class="eyebrow">LABORATORY OVERVIEW</div><h1>Good afternoon 👋</h1><p>Here’s what’s happening across your laboratory today.</p></div><div class="date">21 September 2026 · Today</div></div>
+<div class="grid">
+<div class="card"><div class="stat"><div><div class="label">Patients today</div><div class="num">128</div><div class="delta up">↑ 12.4% vs yesterday</div></div><div class="icon">♙</div></div></div>
+<div class="card"><div class="stat"><div><div class="label">Pending tests</div><div class="num">37</div><div class="delta neutral">14 awaiting validation</div></div><div class="icon">◫</div></div></div>
+<div class="card"><div class="stat"><div><div class="label">Results released</div><div class="num">91</div><div class="delta up">↑ 8.1% today</div></div><div class="icon">✓</div></div></div>
+<div class="card"><div class="stat"><div><div class="label">Critical results</div><div class="num">4</div><div class="delta" style="color:var(--red)">Requires attention</div></div><div class="icon" style="background:#fef3f2;color:var(--red)">!</div></div></div>
+</div>
+<div class="layout">
+<div class="card"><div style="display:flex;justify-content:space-between"><div><h3>Recent laboratory orders</h3><div class="sub">Latest requests across all benches</div></div><button class="quick" style="display:block;margin:0;padding:0;border:0;background:none;color:var(--brand);font-size:11px">View all →</button></div>
+<table class="table"><thead><tr><th>Patient</th><th>Order</th><th>Tests</th><th>Status</th></tr></thead><tbody>
+<tr><td class="patient">Ama Mensah</td><td>ML-10284</td><td>CBC · LFT</td><td><span class="badge complete">Completed</span></td></tr>
+<tr><td class="patient">Kwame Boateng</td><td>ML-10283</td><td>FBC · Malaria</td><td><span class="badge pending">Processing</span></td></tr>
+<tr><td class="patient">Nana Owusu</td><td>ML-10282</td><td>HbA1c · RBS</td><td><span class="badge critical">Critical</span></td></tr>
+<tr><td class="patient">Esi Addo</td><td>ML-10281</td><td>Urinalysis</td><td><span class="badge complete">Completed</span></td></tr>
+<tr><td class="patient">Kojo Asante</td><td>ML-10280</td><td>Lipid profile</td><td><span class="badge pending">Pending</span></td></tr>
+</tbody></table></div>
+<div class="card"><h3>Daily workload</h3><div class="sub">Tests processed by hour</div><div class="chart"><div class="bar" style="height:42%"><strong style="height:70%"></strong></div><div class="bar" style="height:62%"><strong style="height:75%"></strong></div><div class="bar" style="height:78%"><strong style="height:85%"></strong></div><div class="bar" style="height:92%"><strong style="height:88%"></strong></div><div class="bar" style="height:68%"><strong style="height:72%"></strong></div><div class="bar" style="height:55%"><strong style="height:65%"></strong></div><div class="bar" style="height:38%"><strong style="height:55%"></strong></div></div><div class="legend"><span>8am</span><span>10am</span><span>12pm</span><span>2pm</span><span>4pm</span><span>6pm</span><span>Now</span></div></div>
+</div>
+<div class="layout">
+<div class="card"><h3>Work queue</h3><div class="sub">Items needing laboratory action</div>
+<div class="queue"><div class="qleft"><span class="qdot r"></span><div><b style="font-size:12px">4 critical results</b><div class="sub">Review and notify clinician</div></div></div><b style="font-size:11px;color:var(--red)">Urgent</b></div>
+<div class="queue"><div class="qleft"><span class="qdot"></span><div><b style="font-size:12px">14 results awaiting validation</b><div class="sub">Senior scientist review</div></div></div><b style="font-size:11px;color:var(--orange)">Review</b></div>
+<div class="queue"><div class="qleft"><span class="qdot g"></span><div><b style="font-size:12px">3 analyzer alerts</b><div class="sub">Hematology & chemistry</div></div></div><b style="font-size:11px;color:var(--green)">Open</b></div></div>
+<div class="card"><h3>Quick actions</h3><div class="sub">Common laboratory tasks</div><div class="quick"><button onclick="show('New patient')">＋ Register patient</button><button onclick="show('New order')">＋ Create lab order</button><button onclick="show('Results')">✓ Validate results</button><button onclick="show('Reports')">▤ Print report</button></div></div>
+</div>
+<div class="footer-note">MedLab LIS · Secure laboratory workflow · FHIR / HL7 ready</div>
+</section>
+</main></div>
+<script>
+function show(name){document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));event?.currentTarget?.classList.add('active');if(name!=='Dashboard')alert(name+' module is ready for integration with the LIS backend.');}
+</script>
+</body></html>
