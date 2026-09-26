@@ -7,7 +7,17 @@ const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:
 async function digest(value){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))].map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function body(req,max=2000000){const reader=req.body?.getReader();if(!reader)return{};let size=0,parts=[];while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>max){await reader.cancel();fail(413,'Request too large')}parts.push(value)}let bytes=new Uint8Array(size),pos=0;for(const p of parts){bytes.set(p,pos);pos+=p.length}try{return JSON.parse(new TextDecoder().decode(bytes))}catch{fail(400,'Invalid JSON')}}
 function sameOrigin(req){if(req.method==='GET'||req.method==='HEAD')return;const origin=req.headers.get('origin');if(origin&&origin!==new URL(req.url).origin)fail(403,'Cross-origin request rejected');if(req.headers.get('sec-fetch-site')==='cross-site')fail(403,'Cross-site request rejected');if(!req.headers.get('content-type')?.includes('application/json'))fail(415,'Use application/json')}
-async function identity(req,env){const uid=req.headers.get('oai-authenticated-user-id'),email=req.headers.get('oai-authenticated-user-email')?.toLowerCase();if(!uid||!email)fail(401,'Sign in with ChatGPT to continue');if(email===env.KNOX_OWNER_EMAIL?.toLowerCase())return {email,name:'Joseph Korsivi',role:'admin',owner:true};const u=await q(env,'SELECT email,name,role,active FROM staff WHERE email=?',email).first();if(!u||!u.active)fail(403,'Your account has not been granted staff access. Ask the administrator.');return {email:u.email,name:u.name,role:u.role,owner:false}}
+async function identity(req,env){
+  const platformUid=req.headers.get('oai-authenticated-user-id');
+  const platformEmail=req.headers.get('oai-authenticated-user-email');
+  const manualEmail=req.headers.get('x-knox-username')?.trim();
+  const email=(manualEmail||platformEmail)?.toLowerCase();
+  if(!email||(!manualEmail&&!platformUid))fail(401,'Enter your laboratory username to continue');
+  if(email===env.KNOX_OWNER_EMAIL?.toLowerCase())return {email,name:'Joseph Korsivi',role:'admin',owner:true,auth:'manual-username',passwordRequired:false};
+  const u=await q(env,'SELECT email,name,role,active FROM staff WHERE email=?',email).first();
+  if(!u||!u.active)fail(403,'Your username has not been granted staff access. Ask the administrator.');
+  return {email:u.email,name:u.name,role:u.role,owner:false,auth:manualEmail?'manual-username':'chatgpt',passwordRequired:false}
+}
 function permit(user,roles){if(!roles.includes(user.role))fail(403,'Your role does not permit this action')}
 async function audit(env,u,action){await q(env,'INSERT INTO audit(id,actor,action,created) VALUES(?,?,?,?)',id(),u.email,action,now()).run()}
 async function state(env){await q(env,'INSERT INTO workspace(id,revision,data) VALUES(1,0,?) ON CONFLICT(id) DO NOTHING',JSON.stringify(initialData())).run();const r=await q(env,'SELECT revision,data FROM workspace WHERE id=1').first();return {revision:r.revision,data:JSON.parse(r.data)}}
