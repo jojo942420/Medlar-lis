@@ -1,0 +1,26 @@
+import {DatabaseSync} from 'node:sqlite';import fs from 'node:fs';import assert from 'node:assert/strict';
+const root=new URL('..',import.meta.url).pathname.replace(/\/$/,'');const {default:worker,parseHL7}=await import(root+'/worker/api.js');
+const db=new DatabaseSync(':memory:');for(const file of fs.readdirSync(root+'/drizzle').filter(x=>x.endsWith('.sql')))db.exec(fs.readFileSync(root+'/drizzle/'+file,'utf8'));
+const env={KNOX_OWNER_EMAIL:'owner@example.com',DB:{prepare(sql){return {bind(...args){const s=db.prepare(sql);return {async first(){return s.get(...args)||null},async all(){return {results:s.all(...args)}},async run(){return s.run(...args)}}}}},async batch(queries){db.exec('BEGIN');try{const r=[];for(const q of queries)r.push(await q.run());db.exec('COMMIT');return r}catch(e){db.exec('ROLLBACK');throw e}}}};
+async function call(path,method='GET',data,email='owner@example.com',headers={}){const h={'content-type':'application/json',...headers};if(email){h['oai-authenticated-user-id']='user-'+email;h['oai-authenticated-user-email']=email}const res=await worker.fetch(new Request('https://knox.test'+path,{method,headers:h,body:data?JSON.stringify(data):undefined}),env);return {status:res.status,data:await res.json()}}
+assert.equal((await call('/api/state','GET',null,null)).status,401);assert.equal((await call('/api/state','GET',null,'unknown@example.com')).status,403);
+assert.equal((await call('/api/me')).data.user.role,'admin');
+for(const role of ['viewer','reception','scientist'])assert.equal((await call('/api/staff','POST',{name:role,email:role+'@example.com',role})).status,200);
+assert.equal((await call('/api/staff','POST',{email:'owner@example.com',name:'owner',role:'viewer'})).status,400);
+let s=(await call('/api/state')).data;assert.equal(s.revision,0);
+assert.equal((await call('/api/state','PUT',s,'viewer@example.com')).status,403);
+s.data.patients.push({id:'P1',name:'Demo patient'});s.data.orders.push({id:'KDX1',patient:'P1',received:true,reviewed:false,testId:'RBS',template:{fields:[{name:'Glucose',unit:'mmol/L',type:'number'}]}});
+let saved=await call('/api/state','PUT',s);assert.equal(saved.status,200);assert.equal((await call('/api/state','PUT',s)).status,409);s=saved.data;
+let bad=structuredClone(s);bad.data.orders[0].result='5';assert.equal((await call('/api/state','PUT',bad,'reception@example.com')).status,403);
+assert.equal((await call('/api/interfaces','POST',{name:'Mindray',model:'BS-240 test',protocol:'JSON',mapping:{GLU:{testId:'RBS',parameter:'Glucose',unit:'mmol/L'}}},'scientist@example.com')).status,403);
+const i=(await call('/api/interfaces','POST',{name:'Mindray',model:'BS-240 test',protocol:'JSON',mapping:{GLU:{testId:'RBS',parameter:'Glucose',unit:'mmol/L'}}})).data;
+const msg={messageId:'M1',sampleId:'KDX1',results:[{code:'GLU',value:'5.2',unit:'mmol/L'}]};const endpoint='/api/mindray/'+i.id+'/messages';assert.equal((await call(endpoint,'POST',msg,null)).status,401);
+let got=await call(endpoint,'POST',msg,null,{authorization:'Bearer '+i.token});assert.equal(got.status,202);const mid=got.data.id;
+assert.equal((await call(endpoint,'POST',msg,null,{authorization:'Bearer '+i.token})).data.duplicate,true);assert.equal((await call(endpoint,'POST',{...msg,sampleId:'different'},null,{authorization:'Bearer '+i.token})).status,409);
+let imported=await call('/api/messages/'+mid+'/apply','POST',{orderId:'KDX1',revision:s.revision},'scientist@example.com');assert.equal(imported.status,200,JSON.stringify(imported));assert.equal(imported.data.data.orders[0].resultRows[0].value,'5.2');assert.equal(imported.data.data.orders[0].reviewed,false);assert.equal((await call('/api/messages')).data.messages[0].status,'imported');
+let state=imported.data;state.data.orders[0].reviewed=true;state.data.orders[0].reviewer='forged';let reviewed=await call('/api/state','PUT',state,'scientist@example.com');assert.equal(reviewed.status,200);assert.equal(reviewed.data.data.orders[0].reviewer,'scientist');state=reviewed.data;state.data.orders[0].result='changed';assert.equal((await call('/api/state','PUT',state,'scientist@example.com')).status,403);
+assert.equal((await call('/api/staff','POST',{name:'scientist',email:'scientist@example.com',role:'scientist',active:false})).status,200);assert.equal((await call('/api/state','GET',null,'scientist@example.com')).status,403);
+assert.equal((await call('/api/state','PUT',state,'owner@example.com',{origin:'https://evil.test'})).status,403);
+const raw='MSH|^~\\&|MINDRAY||||||ORU^R01|MSG1|P|2.3.1\rOBR|1||KDX1\rOBX|1|NM|GLU||5.2|mmol/L|||||F\r';assert.equal(parseHL7(raw).sampleId,'KDX1');assert.equal(parseHL7(raw).results[0].value,'5.2');
+assert.throws(()=>parseHL7(raw+'OBR|2||KDX2\r'));
+console.log('PASS: owner provisioning, unauthorized access, staff creation/disable, role enforcement, CSRF, revision conflicts, token auth, idempotency, sample matching, mapped draft import, review attribution, reviewed-result protection, HL7 parsing and profile rejection');

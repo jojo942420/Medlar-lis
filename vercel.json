@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "node scripts/build-vercel.mjs",
+  "outputDirectory": "vercel-public",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "https://knox-diagnostics-lab.brakwesi88.chatgpt.site/:path*",
+      "permanent": false
+    }
+  ]
+}
