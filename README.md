@@ -7,3 +7,9 @@ Build: npm ci && npm run build. Migrations: npm run db:generate after schema cha
 Owner signs in with ChatGPT. Staff sign in with their individual accounts and must have both private Site access and an active application role. No reusable admin password is embedded or generated. See integration/README.md for API contracts, hardware limitations and local gateway setup.
 
 This remains an unvalidated laboratory application; do not claim regulatory compliance or universal device compatibility. Reports retain the demonstration label pending clinical validation.
+
+## Finance and imaging
+
+The Finance page stores administrator-managed GHS test prices and sale records with historical unit prices, payment status, receipt number, patient, quantity and timestamp. It reports current week, month and year totals, pending balances, and CSV export. Price changes do not rewrite earlier sales.
+
+The catalogue includes ultrasound templates for abdominal, pelvic, gynaecological, early and standard obstetric, detailed anatomy, growth/wellbeing, breast, thyroid/neck, renal, KUB, prostate, scrotal, venous/arterial/carotid/aortic Doppler, musculoskeletal, neonatal cranial, soft-tissue and guided procedures. Templates are structured starting points and must be reviewed against local practice parameters; AIUM practice parameters provide a reference list at https://www.aium.org/resources/practice-parameters.
