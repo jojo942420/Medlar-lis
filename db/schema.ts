@@ -1,0 +1,6 @@
+import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
+export const staff=sqliteTable('staff',{email:text('email').primaryKey(),name:text('name').notNull(),role:text('role').notNull(),active:integer('active').notNull().default(1),created:text('created').notNull()});
+export const workspace=sqliteTable('workspace',{id:integer('id').primaryKey(),revision:integer('revision').notNull().default(0),data:text('data').notNull()});
+export const audit=sqliteTable('audit',{id:text('id').primaryKey(),actor:text('actor').notNull(),action:text('action').notNull(),created:text('created').notNull()});
+export const interfaces=sqliteTable('interfaces',{id:text('id').primaryKey(),name:text('name').notNull(),model:text('model').notNull(),protocol:text('protocol').notNull(),tokenHash:text('token_hash').notNull(),active:integer('active').notNull().default(1),mapping:text('mapping').notNull(),lastSeen:text('last_seen'),created:text('created').notNull()});
+export const messages=sqliteTable('messages',{id:text('id').primaryKey(),interfaceId:text('interface_id').notNull(),messageId:text('message_id').notNull(),sampleId:text('sample_id').notNull(),payload:text('payload').notNull(),status:text('status').notNull().default('pending'),created:text('created').notNull()},t=>[uniqueIndex('messages_interface_message').on(t.interfaceId,t.messageId)]);
