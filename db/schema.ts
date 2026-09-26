@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
-export const staff=sqliteTable('staff',{email:text('email').primaryKey(),name:text('name').notNull(),role:text('role').notNull(),active:integer('active').notNull().default(1),created:text('created').notNull()});
+export const staff=sqliteTable('staff',{email:text('email').primaryKey(),name:text('name').notNull(),role:text('role').notNull(),passwordHash:text('password_hash'),active:integer('active').notNull().default(1),created:text('created').notNull()});
 export const workspace=sqliteTable('workspace',{id:integer('id').primaryKey(),revision:integer('revision').notNull().default(0),data:text('data').notNull()});
 export const audit=sqliteTable('audit',{id:text('id').primaryKey(),actor:text('actor').notNull(),action:text('action').notNull(),created:text('created').notNull()});
 export const interfaces=sqliteTable('interfaces',{id:text('id').primaryKey(),name:text('name').notNull(),model:text('model').notNull(),protocol:text('protocol').notNull(),tokenHash:text('token_hash').notNull(),active:integer('active').notNull().default(1),mapping:text('mapping').notNull(),lastSeen:text('last_seen'),created:text('created').notNull()});
